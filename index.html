@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Calculator</title>
+</head>
+
+<body>
+    <div class="calculator-grid">
+        <div class="output">
+            <div class="previous-operand"></div>
+            <div class="current-operand"></div>
+        </div>
+        <button class="span-two" onclick="clear()">AC</button>
+        <button onclick="appendNumber('DEL')">DEL</button>
+        <button onclick="chooseOperator('÷')">÷</button>
+
+        <button value="1" onclick="appendNumber('1')">1</button>
+        <button value="2" onclick="appendNumber('2')">2</button>
+        <button value="3" onclick="appendNumber('3')">3</button>
+        <button value="*" onclick="chooseOperator('*')">*</button>
+        <button value="4" onclick="appendNumber('4')">4</button>
+        <button value="5" onclick="appendNumber('5')">5</button>
+        <button value="6" onclick="appendNumber('6')">6</button>
+        <button value="+" onclick="chooseOperator('+')">+</button>
+        <button value="7" onclick="appendNumber('7')">7</button>
+        <button value="8" onclick="appendNumber('8')">8</button>
+        <button value="9" onclick="appendNumber('9')">9</button>
+        <button value="-" onclick="chooseOperator('-')">-</button>
+        <button value="." onclick="appendNumber('.')">.</button>
+        <button value="0" onclick="appendNumber('0')">0</button>
+
+        <button class="span-two" onclick="compute()">=</button>
+    </div>
+
+    <script>
+        // Variables to store the current and previous operands and the selected operator
+        let currentOperand = "";
+        let previousOperand = "";
+        let operator = "";
+
+        // Function to update the display
+        function updateDisplay() {
+            const currentOperandElement = document.querySelector(".current-operand");
+            const previousOperandElement = document.querySelector(".previous-operand");
+
+            currentOperandElement.innerText = currentOperand;
+            previousOperandElement.innerText = previousOperand + (operator !== "" ? operator : "");
+        }
+
+        // Function to handle number button clicks and the DEL button
+        function appendNumber(number) {
+            if (number === "." && currentOperand.includes(".")) return; // Prevent multiple decimal points
+            if (number === "DEL") {
+                currentOperand = currentOperand.slice(0, -1); // Remove the last character
+            } else {
+                currentOperand += number;
+            }
+            updateDisplay();
+        }
+
+        // Function to handle operator button clicks
+        function chooseOperator(selectedOperator) {
+            if (currentOperand === "") return; // Do nothing if there is no current operand
+            if (previousOperand !== "") {
+                compute(); // Compute the previous expression if there's already one
+            }
+            operator = selectedOperator;
+            previousOperand = currentOperand;
+            currentOperand = "";
+            updateDisplay();
+        }
+
+        // Function to perform the calculation
+        function compute() {
+            let result;
+            const prev = parseFloat(previousOperand);
+            const current = parseFloat(currentOperand);
+
+            if (isNaN(prev) || isNaN(current)) {
+                return;
+            }
+
+            switch (operator) {
+                case "+":
+                    result = prev + current;
+                    break;
+                case "-":
+                    result = prev - current;
+                    break;
+                case "*":
+                    result = prev * current;
+                    break;
+                case "÷":
+                    if (current === 0) {
+                        displayError("Math ERROR");
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentOperand = result.toString();
+            operator = "";
+            previousOperand = "";
+            updateDisplay();
+        }
+
+        function displayError(message) {
+            currentOperand = message;
+            operator = "";
+            previousOperand = "";
+            updateDisplay();
+        }
+
+        document.querySelector(".calculator-grid button.span-two").addEventListener("click", () => {
+            if (currentOperand === "Division by zero" || currentOperand === "Invalid input" || currentOperand === "Invalid operator") {
+                clear();
+            } else {
+                compute();
+            }
+        });
+
+        // Function to clear the calculator
+        function clear() {
+            currentOperand = "";
+            previousOperand = "";
+            operator = "";
+            updateDisplay();
+        }
+        document.querySelector(".span-two").addEventListener("click", () => {
+            clear();
+        });
+
+
+
+        // Initialize the display
+        updateDisplay();
+    </script>
+
+</body>
+
+</html>
